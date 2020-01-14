@@ -25,7 +25,7 @@ class Ball:
         pygame.draw.circle(
             surface, self.color, (int(self.x), int(self.y)), self.radius)
 
-    def update(self):
+    def update(self, gameObjects):
         # Make the object move
         self.x += self.dx
         self.y += self.dy
@@ -44,17 +44,29 @@ class Player:
         self.x = 0
         self.y = 0
         self.radius = rad
+        self.type = "player"
 
     def draw(self, surface):
         pygame.draw.circle(
             surface, RED, (int(self.x), int(self.y)), self.radius)
 
-    def update(self):
+    def update(self, gameObjects):
         # In every frame, check the location of the mouse
         # and set the players' objects’ location to that point.
         cord = pygame.mouse.get_pos()
         self.x = cord[0]
         self.y = cord[1]
+
+        # Check for collisions between the player and balls.
+        for gameObj in gameObjects:
+            if gameObj.type == "ball":
+                # End the game if the player gets "hit
+                if (gameObj.x - self.x) ** 2 + (gameObj.y - self.y)**2 <= (gameObj.radius + self.radius)**2:
+                    pygame.quit()
+                    # call sys.exit() after pygame.quit() to stop the program
+                    # so you can not change the surface after you have quit
+                    # pygame and not get the error
+                    sys.exit()
 
 
 class Game:
@@ -68,7 +80,7 @@ class Game:
         self.clock = pygame.time.Clock()
         self.gameObjects = []
         self.gameObjects.append(Ball(GREEN))
-        self.gameObjects.append(Ball(BLACK,100))
+        self.gameObjects.append(Ball(BLACK, 100))
         # Create a new player instance and add it to the list.
         self.gameObjects.append(Player())
 
@@ -87,10 +99,10 @@ class Game:
         while True:
             # Call the event handling function every loop.
             self.handleEvents()
-            
+
             # update all objects in the array every loop.
             for gameObj in self.gameObjects:
-                gameObj.update()
+                gameObj.update(self.gameObjects)
 
             # Color the screen.
             self.screen.fill(WHITE)
