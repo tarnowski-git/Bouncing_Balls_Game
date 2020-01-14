@@ -46,6 +46,7 @@ class Player:
         self.y = 0
         self.radius = rad
         self.type = "player"
+        self.gameOver = False
 
     def draw(self, surface):
         pygame.draw.circle(
@@ -65,11 +66,8 @@ class Player:
                 # (x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2
                 # meaning the distance between the center points is less than the sum of the radii.
                 if (gameObj.x - self.x) ** 2 + (gameObj.y - self.y)**2 <= (gameObj.radius + self.radius)**2:
-                    pygame.quit()
-                    # call sys.exit() after pygame.quit() to stop the program
-                    # so you can not change the surface after you have quit
-                    # pygame and not get the error
-                    sys.exit()
+                    # how the game ends -  will freeze everything in place
+                    self.gameOver = True
 
 
 class GameController:
@@ -81,6 +79,9 @@ class GameController:
         self.inter = interval
         self.next = pygame.time.get_ticks() + (2 * 1000)
         self.type = "game controller"
+        # Adding a Score
+        self.score = 0
+        self.scoreText = pygame.font.Font(None, 20)
 
     def update(self, gameObjects):
         """Check how much time has passed since the time a ball was added or from the start of the game"""
@@ -89,10 +90,12 @@ class GameController:
             self.next = pygame.time.get_ticks() + (self.inter * 1000)
             # Give the balls random velocities.
             gameObjects.append(Ball(BLACK, xVel=random()*2, yVel=random()*2))
+            self.score += 1
 
     def draw(self, screen):
         # Since it is a game object, the main loop will try to draw it
-        pass
+        screen.blit(self.scoreText.render(
+            str(self.score), True, BLACK), (5, 5))
 
 
 class Game:
@@ -110,6 +113,7 @@ class Game:
         self.gameObjects.append(GameController())
         # Create a new player instance and add it to the list.
         self.gameObjects.append(Player())
+        self.gameOver = False
 
     def handleEvents(self):
         # Handle events in a function.
@@ -127,9 +131,13 @@ class Game:
             # Call the event handling function every loop.
             self.handleEvents()
 
-            # update all objects in the array every loop.
-            for gameObj in self.gameObjects:
-                gameObj.update(self.gameObjects)
+            # When gameOver is set, stop updating objects
+            if not self.gameOver:
+                # update all objects in the array every loop.
+                for gameObj in self.gameObjects:
+                    gameObj.update(self.gameObjects)
+                    if gameObj.type == "player":
+                        self.gameOver = gameObj.gameOver
 
             # Color the screen.
             self.screen.fill(WHITE)
