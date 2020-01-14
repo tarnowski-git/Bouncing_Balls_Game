@@ -1,6 +1,6 @@
 # Bouncing Balls Game
 
-Desktop CRUD GUI application to manage customer computer parts with Python, the Tkinter library and Sqlite3 to store data.
+A simple Orinted Objected Programming game that has the player dodging bouncing balls with Python, the PyGame library.
 
 ## Demo
 
