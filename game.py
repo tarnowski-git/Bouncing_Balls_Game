@@ -3,14 +3,16 @@ from pygame.locals import *
 
 import sys
 
-resolution = (400, 300)
-white = (255, 255, 255)
-black = (0, 0, 0)
-red = (255, 0, 0)
+RESOLUTION = (400, 300)
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
 
 
 class Ball:
-    def __init__(self, xPos=resolution[0] / 2, yPos=resolution[1] / 2, xVel=1, yVel=1, rad=15):
+    def __init__(self, col=BLACK, xPos=RESOLUTION[0] / 2, yPos=RESOLUTION[1] / 2, xVel=1, yVel=1, rad=15):
+        self.color = col
         self.x = xPos
         self.y = yPos
         self.dx = xVel
@@ -21,7 +23,7 @@ class Ball:
     def draw(self, surface):
         # needed to make int() conversion into tuple
         pygame.draw.circle(
-            surface, black, (int(self.x), int(self.y)), self.radius)
+            surface, self.color, (int(self.x), int(self.y)), self.radius)
 
     def update(self):
         # Make the object move
@@ -29,9 +31,9 @@ class Ball:
         self.y += self.dy
 
         # Keep the ball on the screen.
-        if (self.x <= 0 or self.x >= resolution[0]):
+        if (self.x <= 0 or self.x >= RESOLUTION[0]):
             self.dx *= -1
-        if (self.y <= 0 or self.y >= resolution[1]):
+        if (self.y <= 0 or self.y >= RESOLUTION[1]):
             self.dy *= -1
 
 
@@ -45,7 +47,7 @@ class Player:
 
     def draw(self, surface):
         pygame.draw.circle(
-            surface, red, (int(self.x), int(self.y)), self.radius)
+            surface, RED, (int(self.x), int(self.y)), self.radius)
 
     def update(self):
         # In every frame, check the location of the mouse
@@ -62,11 +64,11 @@ class Game:
         # Pygame needs to be initialized to use
         # certain features like text or sound.
         pygame.init()
-        self.screen = pygame.display.set_mode(resolution)
+        self.screen = pygame.display.set_mode(RESOLUTION)
         self.clock = pygame.time.Clock()
         self.gameObjects = []
-        self.gameObjects.append(Ball())
-        self.gameObjects.append(Ball(100))
+        self.gameObjects.append(Ball(GREEN))
+        self.gameObjects.append(Ball(BLACK,100))
         # Create a new player instance and add it to the list.
         self.gameObjects.append(Player())
 
@@ -85,12 +87,13 @@ class Game:
         while True:
             # Call the event handling function every loop.
             self.handleEvents()
+            
             # update all objects in the array every loop.
             for gameObj in self.gameObjects:
                 gameObj.update()
 
             # Color the screen.
-            self.screen.fill(white)
+            self.screen.fill(WHITE)
 
             # draw all objects in the array every loop.
             for gameObj in self.gameObjects:
