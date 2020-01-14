@@ -35,8 +35,29 @@ class Ball:
             self.dy *= -1
 
 
-# Make the game loop into a class
+class Player:
+    """Player as a circle that is controlled by the mouse."""
+
+    def __init__(self, rad=20):
+        self.x = 0
+        self.y = 0
+        self.radius = rad
+
+    def draw(self, surface):
+        pygame.draw.circle(
+            surface, red, (int(self.x), int(self.y)), self.radius)
+
+    def update(self):
+        # In every frame, check the location of the mouse
+        # and set the players' objects’ location to that point.
+        cord = pygame.mouse.get_pos()
+        self.x = cord[0]
+        self.y = cord[1]
+
+
 class Game:
+    """Make the game loop into a class."""
+
     def __init__(self):
         # Pygame needs to be initialized to use
         # certain features like text or sound.
@@ -46,6 +67,8 @@ class Game:
         self.gameObjects = []
         self.gameObjects.append(Ball())
         self.gameObjects.append(Ball(100))
+        # Create a new player instance and add it to the list.
+        self.gameObjects.append(Player())
 
     def handleEvents(self):
         # Handle events in a function.
