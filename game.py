@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 
 import sys
+from random import random
 
 RESOLUTION = (400, 300)
 WHITE = (255, 255, 255)
@@ -61,6 +62,8 @@ class Player:
         for gameObj in gameObjects:
             if gameObj.type == "ball":
                 # End the game if the player gets "hit
+                # (x2-x1)^2 + (y1-y2)^2 <= (r1+r2)^2
+                # meaning the distance between the center points is less than the sum of the radii.
                 if (gameObj.x - self.x) ** 2 + (gameObj.y - self.y)**2 <= (gameObj.radius + self.radius)**2:
                     pygame.quit()
                     # call sys.exit() after pygame.quit() to stop the program
@@ -69,8 +72,32 @@ class Player:
                     sys.exit()
 
 
+class GameController:
+    """Game controllers are responsible for "running" the game.
+    The controller will periodically add another ball to the screen 
+    to make the game harder."""
+
+    def __init__(self, interval=5):
+        self.inter = interval
+        self.next = pygame.time.get_ticks() + (2 * 1000)
+        self.type = "game controller"
+
+    def update(self, gameObjects):
+        """Check how much time has passed since the time a ball was added or from the start of the game"""
+        # If the time is more than the interval you'll reset the time and add a ball.
+        if self.next < pygame.time.get_ticks():
+            self.next = pygame.time.get_ticks() + (self.inter * 1000)
+            # Give the balls random velocities.
+            gameObjects.append(Ball(BLACK, xVel=random()*2, yVel=random()*2))
+
+    def draw(self, screen):
+        # Since it is a game object, the main loop will try to draw it
+        pass
+
+
 class Game:
-    """Make the game loop into a class."""
+    """Make the game loop into a class.
+    Responsible for drawing and updating all our objects"""
 
     def __init__(self):
         # Pygame needs to be initialized to use
@@ -79,8 +106,8 @@ class Game:
         self.screen = pygame.display.set_mode(RESOLUTION)
         self.clock = pygame.time.Clock()
         self.gameObjects = []
-        self.gameObjects.append(Ball(GREEN))
-        self.gameObjects.append(Ball(BLACK, 100))
+        # The game should now spawn a ball every five seconds.
+        self.gameObjects.append(GameController())
         # Create a new player instance and add it to the list.
         self.gameObjects.append(Player())
 
