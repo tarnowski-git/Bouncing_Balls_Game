@@ -4,7 +4,7 @@ A simple Orinted Objected Programming game that has the player dodging bouncing 
 
 ## Demo
 
-<!-- ![game](https://user-images.githubusercontent.com/34337622/72091944-9f66da80-3311-11ea-81d6-977131cc7991.gif) -->
+![game](https://user-images.githubusercontent.com/34337622/72373131-f13fa400-3707-11ea-9fa0-91f9913c60b1.gif)
 
 ## Technologies
 
